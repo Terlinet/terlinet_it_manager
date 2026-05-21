@@ -100,6 +100,11 @@ class _InitialScreenState extends State<InitialScreen> {
           Container(color: Colors.black.withOpacity(0.4)),
           const Center(child: MainContent()),
           const FloatingCyberCube(),
+          const Positioned(
+            top: 20,
+            right: 40,
+            child: Web3Badge(),
+          ),
         ],
       ),
     );
@@ -508,6 +513,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               ),
             ),
           ),
+          const Positioned(
+            top: 20,
+            right: 40,
+            child: Web3Badge(),
+          ),
           ...List.generate(5, (index) {
             return AnimatedBuilder(
               animation: _rotationController,
@@ -709,6 +719,11 @@ class _SignUpScreenState extends State<SignUpScreen> with SingleTickerProviderSt
               ),
             ),
           ),
+          const Positioned(
+            top: 20,
+            right: 40,
+            child: Web3Badge(),
+          ),
           Positioned(top: 40, left: 20, child: IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Navigator.pop(context))),
         ],
       ),
@@ -832,6 +847,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               _buildRecoveryButton(),
             ],
           ),
+        ),
+      ),
+      floatingActionButton: const Padding(
+        padding: EdgeInsets.only(top: 20, right: 20),
+        child: Align(
+          alignment: Alignment.topRight,
+          child: Web3Badge(),
         ),
       ),
     );
@@ -975,46 +997,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           Text('Olá, Administrador', style: GoogleFonts.orbitron(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
                         ],
                       ),
-                      // Web3 Tech Badge (Substituindo o card anterior)
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          ...List.generate(3, (index) {
-                            return AnimatedBuilder(
-                              animation: _rotationController,
-                              builder: (context, child) {
-                                final angle = (_rotationController.value * 2 * math.pi) + (index * 2 * math.pi / 3);
-                                return Transform(
-                                  transform: Matrix4.identity()
-                                    ..translate(math.cos(angle) * 80, math.sin(angle) * 20)
-                                    ..rotateX(_rotationController.value * 2 * math.pi)
-                                    ..rotateY(_rotationController.value * 2 * math.pi),
-                                  alignment: Alignment.center,
-                                  child: Opacity(
-                                    opacity: 0.6,
-                                    child: _buildMiniBackgroundCube(index.isEven ? Colors.blueAccent : Colors.cyanAccent),
-                                  ),
-                                );
-                              },
-                            );
-                          }),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-                            child: Text(
-                              'terlinet.blockchain',
-                              style: GoogleFonts.orbitron(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.5,
-                                shadows: [
-                                  const Shadow(color: Colors.blueAccent, blurRadius: 10),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                      const Web3Badge(),
                     ],
                   ),
                   if (_isConnected)
@@ -1159,6 +1142,107 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           const SizedBox(height: 8),
           Text(value, style: GoogleFonts.orbitron(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
         ],
+      ),
+    );
+  }
+}
+
+class Web3Badge extends StatefulWidget {
+  const Web3Badge({super.key});
+
+  @override
+  State<Web3Badge> createState() => _Web3BadgeState();
+}
+
+class _Web3BadgeState extends State<Web3Badge> with TickerProviderStateMixin {
+  late AnimationController _rotationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 15),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        ...List.generate(3, (index) {
+          return AnimatedBuilder(
+            animation: _rotationController,
+            builder: (context, child) {
+              final angle = (_rotationController.value * 2 * math.pi) + (index * 2 * math.pi / 3);
+              return Transform(
+                transform: Matrix4.identity()
+                  ..translate(math.cos(angle) * 80, math.sin(angle) * 20)
+                  ..rotateX(_rotationController.value * 2 * math.pi)
+                  ..rotateY(_rotationController.value * 2 * math.pi),
+                alignment: Alignment.center,
+                child: Opacity(
+                  opacity: 0.6,
+                  child: _buildMiniBackgroundCube(index.isEven ? Colors.blueAccent : Colors.cyanAccent),
+                ),
+              );
+            },
+          );
+        }),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+          child: Text(
+            'terlinet.blockchain',
+            style: GoogleFonts.orbitron(
+              fontSize: 16,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.5,
+              shadows: [
+                const Shadow(color: Colors.blueAccent, blurRadius: 15),
+                const Shadow(color: Colors.cyanAccent, blurRadius: 10),
+                Shadow(color: Colors.white.withOpacity(0.5), blurRadius: 5),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMiniBackgroundCube(Color color) {
+    return SizedBox(
+      width: 20,
+      height: 20,
+      child: Stack(
+        children: [
+          _microCubeFace(const Offset(0, 0), 10, color),
+          _microCubeFace(const Offset(0, 0), -10, color),
+          Transform(transform: Matrix4.identity()..rotateY(math.pi / 2)..translate(0.0, 0.0, 10.0), child: _microCubeFace(Offset.zero, 0, color)),
+          Transform(transform: Matrix4.identity()..rotateY(-math.pi / 2)..translate(0.0, 0.0, 10.0), child: _microCubeFace(Offset.zero, 0, color)),
+        ],
+      ),
+    );
+  }
+
+  Widget _microCubeFace(Offset offset, double z, Color color) {
+    return Transform(
+      transform: Matrix4.identity()..translate(offset.dx, offset.dy, z),
+      alignment: Alignment.center,
+      child: Container(
+        width: 15,
+        height: 15,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.2),
+          border: Border.all(color: color.withOpacity(0.8), width: 1),
+        ),
       ),
     );
   }
