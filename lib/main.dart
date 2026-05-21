@@ -8,8 +8,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:js/js.dart';
 import 'package:js/js_util.dart';
 
-@JS('window.ethereum')
+@JS()
 external dynamic get ethereum;
+
+@JS('Object.keys')
+external List<String> getObjectKeys(dynamic obj);
 
 void main() {
   runApp(const TerlineTApp());
@@ -848,20 +851,56 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool _isConnected = false;
 
   Future<void> _connectWallet() async {
-    if (ethereum == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('MetaMask não encontrada! Instale a extensão no navegador.')));
+    print("Iniciando conexão com a carteira...");
+
+    // Verificação robusta do provedor Ethereum
+    bool hasEthereum = false;
+    try {
+      hasEthereum = ethereum != null;
+    } catch (e) {
+      hasEthereum = false;
+    }
+
+    if (!hasEthereum) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('MetaMask não detectada! Certifique-se de que a extensão está instalada e ativa.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
       return;
     }
+
     try {
-      final List accounts = await promiseToFuture(callMethod(ethereum, 'request', [jsify({'method': 'eth_requestAccounts'})]));
+      // Solicita acesso às contas
+      final dynamic response = await promiseToFuture(
+        callMethod(ethereum, 'request', [
+          jsify({'method': 'eth_requestAccounts'})
+        ]),
+      );
+
+      final List accounts = response as List;
+
       if (accounts.isNotEmpty) {
         setState(() {
           _walletAddress = accounts[0];
           _isConnected = true;
         });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Carteira conectada com sucesso!'),
+            backgroundColor: Colors.green,
+          ),
+        );
       }
     } catch (e) {
-      print("Erro ao conectar carteira: $e");
+      print("Erro detalhado ao conectar carteira: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao conectar: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
