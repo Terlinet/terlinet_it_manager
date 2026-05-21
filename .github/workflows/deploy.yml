@@ -22,7 +22,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Web
-        run: flutter build web --release --base-href "/terlinet_it_manager/"
+        run: flutter build web --release --base-href "/terlinet_it_manager/" --no-wasm-dry-run
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4

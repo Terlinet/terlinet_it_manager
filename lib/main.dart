@@ -11,6 +11,9 @@ import 'package:js/js_util.dart';
 @JS()
 external dynamic get ethereum;
 
+@JS('window')
+external dynamic get window;
+
 @JS('Object.keys')
 external List<String> getObjectKeys(dynamic obj);
 
