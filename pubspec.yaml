@@ -1,0 +1,28 @@
+name: terlinet_it_manager
+description: A new Flutter project.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  video_player: ^2.8.1
+  google_fonts: ^6.1.0
+  http: ^1.2.1
+  shared_preferences: ^2.2.2
+  web3dart: ^2.7.3
+  js: ^0.6.7
+  xmtp: ^1.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/videos/video.mp4
