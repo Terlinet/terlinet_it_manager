@@ -859,43 +859,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Future<void> _connectWallet() async {
     setState(() => _isConnecting = true);
-    jsLog("Tentando conectar à MetaMask...");
+    jsLog("Iniciando busca por provedores de carteira...");
 
     try {
-      // Verificação de segurança via JS Util
       final hasEth = hasProperty(window, 'ethereum');
 
       if (!hasEth) {
-        jsLog("MetaMask não encontrada no window.ethereum");
-        _showError('MetaMask não detectada! Verifique a extensão.');
-        setState(() => _isConnecting = false);
+        jsLog("Nenhum provedor ethereum encontrado no window.");
+        _showError('Carteira não detectada! Verifique se a MetaMask está instalada.');
         return;
       }
 
-      final eth = getProperty(window, 'ethereum');
+      var eth = getProperty(window, 'ethereum');
 
-      // Solicita acesso às contas via requestAccounts
+      // Lógica para lidar com múltiplos provedores (ex: MetaMask + TronLink)
+      if (hasProperty(eth, 'providers')) {
+        jsLog("Múltiplos provedores detectados. Procurando MetaMask...");
+        final List providers = getProperty(eth, 'providers');
+        eth = providers.firstWhere(
+          (p) => hasProperty(p, 'isMetaMask') && getProperty(p, 'isMetaMask') == true,
+          orElse: () => providers.first,
+        );
+      }
+
+      jsLog("Solicitando contas à carteira selecionada...");
+
+      // Solicita acesso às contas via requestAccounts com timeout
       final dynamic response = await promiseToFuture(
         callMethod(eth, 'request', [
           jsify({'method': 'eth_requestAccounts'})
         ]),
-      );
+      ).timeout(const Duration(seconds: 30));
 
       final List accounts = response as List;
 
       if (accounts.isNotEmpty) {
-        jsLog("Conectado com sucesso: " + accounts[0].toString());
+        jsLog("Conexão bem sucedida: " + accounts[0].toString());
         setState(() {
           _walletAddress = accounts[0];
           _isConnected = true;
-          _isConnecting = false;
         });
         _showSuccess('Carteira conectada!');
       }
     } catch (e) {
-      jsLog("Erro na conexão: " + e.toString());
-      _showError('Erro ao conectar: $e');
-      setState(() => _isConnecting = false);
+      jsLog("Falha na conexão Web3: " + e.toString());
+      _showError('Erro ao conectar: Verifique se há notificações pendentes na sua carteira.');
+    } finally {
+      if (mounted) {
+        setState(() => _isConnecting = false);
+      }
     }
   }
 
