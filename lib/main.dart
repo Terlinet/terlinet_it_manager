@@ -7,6 +7,10 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:js/js.dart';
 import 'package:js/js_util.dart';
+import 'package:web3auth_flutter/web3auth_flutter.dart';
+import 'package:web3auth_flutter/enums.dart';
+import 'package:web3auth_flutter/input.dart';
+import 'package:web3auth_flutter/output.dart';
 
 @JS()
 external dynamic get ethereum;
@@ -857,53 +861,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool _isConnected = false;
   bool _isConnecting = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _initWeb3Auth();
+  }
+
+  Future<void> _initWeb3Auth() async {
+    try {
+      await Web3AuthFlutter.init(
+        Web3AuthOptions(
+          clientId: 'BPi5ee79Y71-6I1v09f19m0XWq7-06Qv-Z66u999-Z66u999-Z66u999', // PLACEHOLDER
+          network: Network.sapphire_mainnet,
+          redirectUrl: Uri.parse('https://terlinet.github.io/terlinet_it_manager/'),
+        ),
+      );
+    } catch (e) {
+      jsLog("Erro ao inicializar Web3Auth: $e");
+    }
+  }
+
   Future<void> _connectWallet() async {
     setState(() => _isConnecting = true);
-    jsLog("Iniciando busca por provedores de carteira...");
+    jsLog("Iniciando Social Login via Web3Auth...");
 
     try {
-      final hasEth = hasProperty(window, 'ethereum');
+      final Web3AuthResponse response = await Web3AuthFlutter.login(
+        LoginParams(loginProvider: Provider.google),
+      );
 
-      if (!hasEth) {
-        jsLog("Nenhum provedor ethereum encontrado no window.");
-        _showError('Carteira não detectada! Verifique se a MetaMask está instalada.');
-        return;
-      }
-
-      var eth = getProperty(window, 'ethereum');
-
-      // Lógica para lidar com múltiplos provedores (ex: MetaMask + TronLink)
-      if (hasProperty(eth, 'providers')) {
-        jsLog("Múltiplos provedores detectados. Procurando MetaMask...");
-        final List providers = getProperty(eth, 'providers');
-        eth = providers.firstWhere(
-          (p) => hasProperty(p, 'isMetaMask') && getProperty(p, 'isMetaMask') == true,
-          orElse: () => providers.first,
-        );
-      }
-
-      jsLog("Solicitando contas à carteira selecionada...");
-
-      // Solicita acesso às contas via requestAccounts com timeout
-      final dynamic response = await promiseToFuture(
-        callMethod(eth, 'request', [
-          jsify({'method': 'eth_requestAccounts'})
-        ]),
-      ).timeout(const Duration(seconds: 30));
-
-      final List accounts = response as List;
-
-      if (accounts.isNotEmpty) {
-        jsLog("Conexão bem sucedida: " + accounts[0].toString());
+      if (response.ed25519PrivKey != null) {
+        // Aqui o Web3Auth gera uma carteira vinculada ao Google do usuário
+        // O endereço pode ser derivado da chave privada
         setState(() {
-          _walletAddress = accounts[0];
+          _walletAddress = "Carteira Web3 Ativa";
           _isConnected = true;
         });
-        _showSuccess('Carteira conectada!');
+        _showSuccess('Login Social realizado!');
       }
     } catch (e) {
-      jsLog("Falha na conexão Web3: " + e.toString());
-      _showError('Erro ao conectar: Verifique se há notificações pendentes na sua carteira.');
+      jsLog("Erro no Social Login: " + e.toString());
+      _showError('Falha no login: $e');
     } finally {
       if (mounted) {
         setState(() => _isConnecting = false);
@@ -998,7 +996,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ? "terlinet.blockchain"
                                     : (_isConnecting
                                         ? "PROCESSANDO..."
-                                        : 'CONECTAR CARTEIRA'),
+                                        : 'ENTRAR COM GOOGLE'),
                                 style: GoogleFonts.orbitron(
                                     fontSize: 14,
                                     color: Colors.white,

@@ -16,6 +16,7 @@ dependencies:
   web3dart: ^2.7.3
   js: ^0.6.7
   xmtp: ^1.0.1
+  web3auth_flutter: ^4.0.0
 
 dev_dependencies:
   flutter_test:
