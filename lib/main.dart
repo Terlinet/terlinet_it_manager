@@ -857,15 +857,26 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> with TickerProviderStateMixin {
   String _walletAddress = "";
   bool _isConnected = false;
   bool _isConnecting = false;
+  late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
     _initWeb3Auth();
+    _rotationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 15),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    super.dispose();
   }
 
   Future<void> _initWeb3Auth() async {
@@ -964,38 +975,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Text('Olá, Administrador', style: GoogleFonts.orbitron(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
                         ],
                       ),
-                      // Card Web3 Identity (Desativado)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(color: Colors.grey.withOpacity(0.5)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.block, color: Colors.grey, size: 18),
-                            const SizedBox(width: 10),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'terlinet.blockchain',
-                                  style: GoogleFonts.orbitron(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                    fontWeight: FontWeight.bold,
+                      // Web3 Tech Badge (Substituindo o card anterior)
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          ...List.generate(3, (index) {
+                            return AnimatedBuilder(
+                              animation: _rotationController,
+                              builder: (context, child) {
+                                final angle = (_rotationController.value * 2 * math.pi) + (index * 2 * math.pi / 3);
+                                return Transform(
+                                  transform: Matrix4.identity()
+                                    ..translate(math.cos(angle) * 80, math.sin(angle) * 20)
+                                    ..rotateX(_rotationController.value * 2 * math.pi)
+                                    ..rotateY(_rotationController.value * 2 * math.pi),
+                                  alignment: Alignment.center,
+                                  child: Opacity(
+                                    opacity: 0.6,
+                                    child: _buildMiniBackgroundCube(index.isEven ? Colors.blueAccent : Colors.cyanAccent),
                                   ),
-                                ),
-                                const Text(
-                                  'Conexão Desativada',
-                                  style: TextStyle(color: Colors.grey, fontSize: 8),
+                                );
+                              },
+                            );
+                          }),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 1.5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.blueAccent.withOpacity(0.2),
+                                  blurRadius: 15,
+                                  spreadRadius: 1,
                                 ),
                               ],
                             ),
-                          ],
-                        ),
+                            child: Text(
+                              'terlinet.blockchain',
+                              style: GoogleFonts.orbitron(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                                shadows: [
+                                  const Shadow(color: Colors.blueAccent, blurRadius: 10),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -1090,6 +1120,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
         child: _buildStatusCard(title, value, icon, color),
+      ),
+    );
+  }
+
+  Widget _buildMiniBackgroundCube(Color color) {
+    return SizedBox(
+      width: 20,
+      height: 20,
+      child: Stack(
+        children: [
+          _microCubeFace(const Offset(0, 0), 10, color),
+          _microCubeFace(const Offset(0, 0), -10, color),
+          Transform(transform: Matrix4.identity()..rotateY(math.pi / 2)..translate(0.0, 0.0, 10.0), child: _microCubeFace(Offset.zero, 0, color)),
+          Transform(transform: Matrix4.identity()..rotateY(-math.pi / 2)..translate(0.0, 0.0, 10.0), child: _microCubeFace(Offset.zero, 0, color)),
+        ],
+      ),
+    );
+  }
+
+  Widget _microCubeFace(Offset offset, double z, Color color) {
+    return Transform(
+      transform: Matrix4.identity()..translate(offset.dx, offset.dy, z),
+      alignment: Alignment.center,
+      child: Container(
+        width: 15,
+        height: 15,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.2),
+          border: Border.all(color: color.withOpacity(0.8), width: 1),
+        ),
       ),
     );
   }
