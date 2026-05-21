@@ -536,6 +536,12 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "web3auth_flutter",
+      "rootUri": "file:///C:/Users/tertu/AppData/Local/Pub/Cache/hosted/pub.dev/web3auth_flutter-4.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
       "name": "web3dart",
       "rootUri": "file:///C:/Users/tertu/AppData/Local/Pub/Cache/hosted/pub.dev/web3dart-2.7.3",
       "packageUri": "lib/",

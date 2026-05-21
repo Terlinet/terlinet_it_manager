@@ -13,6 +13,7 @@
         "js",
         "shared_preferences",
         "video_player",
+        "web3auth_flutter",
         "web3dart",
         "xmtp"
       ],
@@ -44,6 +45,29 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "web3auth_flutter",
+      "version": "4.0.0",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "xmtp",
+      "version": "1.3.1",
+      "dependencies": [
+        "async",
+        "cryptography",
+        "cryptography_flutter",
+        "fixnum",
+        "flutter",
+        "grpc",
+        "pointycastle",
+        "quiver",
+        "web3dart",
+        "xmtp_proto"
       ]
     },
     {
@@ -220,13 +244,68 @@
       ]
     },
     {
-      "name": "wallet",
-      "version": "0.0.13",
+      "name": "xmtp_proto",
+      "version": "3.33.0",
       "dependencies": [
+        "fixnum",
+        "grpc",
+        "protobuf"
+      ]
+    },
+    {
+      "name": "quiver",
+      "version": "3.2.2",
+      "dependencies": [
+        "matcher"
+      ]
+    },
+    {
+      "name": "pointycastle",
+      "version": "3.9.1",
+      "dependencies": [
+        "collection",
         "convert",
-        "eip55",
-        "pointycastle",
-        "sec"
+        "js"
+      ]
+    },
+    {
+      "name": "fixnum",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "cryptography_flutter",
+      "version": "2.3.4",
+      "dependencies": [
+        "cryptography",
+        "flutter"
+      ]
+    },
+    {
+      "name": "cryptography",
+      "version": "2.9.0",
+      "dependencies": [
+        "collection",
+        "crypto",
+        "ffi",
+        "meta",
+        "typed_data"
+      ]
+    },
+    {
+      "name": "grpc",
+      "version": "3.2.4",
+      "dependencies": [
+        "archive",
+        "async",
+        "clock",
+        "crypto",
+        "fixnum",
+        "googleapis_auth",
+        "http",
+        "http2",
+        "meta",
+        "protobuf"
       ]
     },
     {
@@ -235,6 +314,16 @@
       "dependencies": [
         "collection",
         "meta"
+      ]
+    },
+    {
+      "name": "wallet",
+      "version": "0.0.13",
+      "dependencies": [
+        "convert",
+        "eip55",
+        "pointycastle",
+        "sec"
       ]
     },
     {
@@ -291,15 +380,6 @@
       "version": "1.1.0",
       "dependencies": [
         "pointycastle"
-      ]
-    },
-    {
-      "name": "pointycastle",
-      "version": "3.9.1",
-      "dependencies": [
-        "collection",
-        "convert",
-        "js"
       ]
     },
     {
@@ -504,9 +584,42 @@
       ]
     },
     {
-      "name": "fixnum",
-      "version": "1.1.1",
+      "name": "protobuf",
+      "version": "2.1.0",
+      "dependencies": [
+        "collection",
+        "fixnum",
+        "meta"
+      ]
+    },
+    {
+      "name": "ffi",
+      "version": "2.2.0",
       "dependencies": []
+    },
+    {
+      "name": "http2",
+      "version": "2.3.1",
+      "dependencies": []
+    },
+    {
+      "name": "googleapis_auth",
+      "version": "1.6.0",
+      "dependencies": [
+        "args",
+        "crypto",
+        "google_identity_services_web",
+        "http",
+        "http_parser"
+      ]
+    },
+    {
+      "name": "archive",
+      "version": "3.6.1",
+      "dependencies": [
+        "crypto",
+        "path"
+      ]
     },
     {
       "name": "path_provider_windows",
@@ -593,8 +706,16 @@
       "dependencies": []
     },
     {
-      "name": "ffi",
-      "version": "2.2.0",
+      "name": "google_identity_services_web",
+      "version": "0.3.3+1",
+      "dependencies": [
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "args",
+      "version": "2.7.0",
       "dependencies": []
     },
     {
@@ -697,11 +818,6 @@
       ]
     },
     {
-      "name": "args",
-      "version": "2.7.0",
-      "dependencies": []
-    },
-    {
       "name": "glob",
       "version": "2.1.3",
       "dependencies": [
@@ -728,114 +844,6 @@
         "collection",
         "meta",
         "pub_semver"
-      ]
-    },
-    {
-      "name": "xmtp",
-      "version": "1.3.1",
-      "dependencies": [
-        "async",
-        "cryptography",
-        "cryptography_flutter",
-        "fixnum",
-        "flutter",
-        "grpc",
-        "pointycastle",
-        "quiver",
-        "web3dart",
-        "xmtp_proto"
-      ]
-    },
-    {
-      "name": "quiver",
-      "version": "3.2.2",
-      "dependencies": [
-        "matcher"
-      ]
-    },
-    {
-      "name": "xmtp_proto",
-      "version": "3.33.0",
-      "dependencies": [
-        "fixnum",
-        "grpc",
-        "protobuf"
-      ]
-    },
-    {
-      "name": "protobuf",
-      "version": "2.1.0",
-      "dependencies": [
-        "collection",
-        "fixnum",
-        "meta"
-      ]
-    },
-    {
-      "name": "cryptography_flutter",
-      "version": "2.3.4",
-      "dependencies": [
-        "cryptography",
-        "flutter"
-      ]
-    },
-    {
-      "name": "cryptography",
-      "version": "2.9.0",
-      "dependencies": [
-        "collection",
-        "crypto",
-        "ffi",
-        "meta",
-        "typed_data"
-      ]
-    },
-    {
-      "name": "grpc",
-      "version": "3.2.4",
-      "dependencies": [
-        "archive",
-        "async",
-        "clock",
-        "crypto",
-        "fixnum",
-        "googleapis_auth",
-        "http",
-        "http2",
-        "meta",
-        "protobuf"
-      ]
-    },
-    {
-      "name": "http2",
-      "version": "2.3.1",
-      "dependencies": []
-    },
-    {
-      "name": "googleapis_auth",
-      "version": "1.6.0",
-      "dependencies": [
-        "args",
-        "crypto",
-        "google_identity_services_web",
-        "http",
-        "http_parser"
-      ]
-    },
-    {
-      "name": "google_identity_services_web",
-      "version": "0.3.3+1",
-      "dependencies": [
-        "meta",
-        "web"
-      ]
-    },
-    {
-      "name": "archive",
-      "version": "3.6.1",
-      "dependencies": [
-        "crypto",
-        "path"
       ]
     }
   ],

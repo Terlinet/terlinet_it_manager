@@ -783,8 +783,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _handleRecovery() async {
     setState(() => _isLoading = true);
     try {
-      final url = Uri.parse('https://tertulianoshow-terlinet-backend.hf.space/recover');
-      await http.post(url, headers: {'Content-Type': 'application/json'}, body: json.encode({'identifier': _emailController.text.trim()}));
       if (mounted) {
         showDialog(
           context: context,
@@ -792,7 +790,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             backgroundColor: const Color(0xFF050505),
             shape: RoundedRectangleBorder(side: const BorderSide(color: Colors.blueAccent, width: 1), borderRadius: BorderRadius.circular(15)),
             title: Text('RECUPERAÇÃO', style: GoogleFonts.orbitron(color: Colors.white, fontSize: 16)),
-            content: const Text('Se este usuário existir, as instruções de recuperação foram enviadas.', style: TextStyle(color: Colors.white70)),
+            content: const Text(
+              'Para recuperar sua senha, por favor envie um e-mail para:\n\nterlinetdeveloper@gmail.com\n\nInforme seu nome de usuário no corpo da mensagem.',
+              style: TextStyle(color: Colors.white70),
+            ),
             actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('OK', style: GoogleFonts.orbitron(color: Colors.blueAccent)))],
           ),
         );
@@ -963,47 +964,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Text('Olá, Administrador', style: GoogleFonts.orbitron(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
                         ],
                       ),
-                      GestureDetector(
-                        onTap: (_isConnected || _isConnecting) ? null : _connectWallet,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Colors.blueAccent.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(
-                                color: _isConnected
-                                    ? Colors.greenAccent
-                                    : Colors.blueAccent.withOpacity(0.5)),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.blueAccent.withOpacity(0.1),
-                                  blurRadius: 10)
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                  _isConnected
-                                      ? Icons.verified_user
-                                      : Icons.account_balance_wallet_outlined,
-                                  color: _isConnected
-                                      ? Colors.greenAccent
-                                      : Colors.cyanAccent,
-                                  size: 18),
-                              const SizedBox(width: 10),
-                              Text(
-                                _isConnected
-                                    ? "terlinet.blockchain"
-                                    : (_isConnecting
-                                        ? "PROCESSANDO..."
-                                        : 'ENTRAR COM GOOGLE'),
-                                style: GoogleFonts.orbitron(
+                      // Card Web3 Identity (Desativado)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(color: Colors.grey.withOpacity(0.5)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.block, color: Colors.grey, size: 18),
+                            const SizedBox(width: 10),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'terlinet.blockchain',
+                                  style: GoogleFonts.orbitron(
                                     fontSize: 14,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const Text(
+                                  'Conexão Desativada',
+                                  style: TextStyle(color: Colors.grey, fontSize: 8),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -1024,12 +1015,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         _buildStatusCard('SERVIDORES', 'ONLINE', Icons.dns, Colors.greenAccent),
                         _buildStatusCard('TRÁFEGO REDE', 'ESTÁVEL', Icons.speed, Colors.blueAccent),
                         _buildStatusCard('SEGURANÇA', 'PROTEGIDO', Icons.lock, Colors.cyanAccent),
-                        _buildClickableStatusCard(
+                        _buildStatusCard(
                           'CAIXA WEB3',
-                          _isConnected ? 'ABRIR INBOX' : 'CONECTE WALLET',
-                          Icons.mail_outline,
-                          Colors.purpleAccent,
-                          () => _showXMTPInbox(context),
+                          'DESATIVADA',
+                          Icons.mail_lock_outlined,
+                          Colors.grey,
                         ),
                         _buildStatusCard('UPTIME', '99.9%', Icons.timer_outlined, Colors.orangeAccent),
                         _buildStatusCard('USUÁRIOS', 'VER TODOS', Icons.people_outline, Colors.white60),
