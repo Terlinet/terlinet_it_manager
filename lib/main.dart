@@ -14,6 +14,9 @@ external dynamic get ethereum;
 @JS('Object.keys')
 external List<String> getObjectKeys(dynamic obj);
 
+@JS('console.log')
+external void jsLog(dynamic msg);
+
 void main() {
   runApp(const TerlineTApp());
 }
@@ -849,32 +852,28 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   String _walletAddress = "";
   bool _isConnected = false;
+  bool _isConnecting = false;
 
   Future<void> _connectWallet() async {
-    print("Iniciando conexão com a carteira...");
-
-    // Verificação robusta do provedor Ethereum
-    bool hasEthereum = false;
-    try {
-      hasEthereum = ethereum != null;
-    } catch (e) {
-      hasEthereum = false;
-    }
-
-    if (!hasEthereum) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('MetaMask não detectada! Certifique-se de que a extensão está instalada e ativa.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
+    setState(() => _isConnecting = true);
+    jsLog("Tentando conectar à MetaMask...");
 
     try {
-      // Solicita acesso às contas
+      // Verificação de segurança via JS Util
+      final hasEth = hasProperty(window, 'ethereum');
+
+      if (!hasEth) {
+        jsLog("MetaMask não encontrada no window.ethereum");
+        _showError('MetaMask não detectada! Verifique a extensão.');
+        setState(() => _isConnecting = false);
+        return;
+      }
+
+      final eth = getProperty(window, 'ethereum');
+
+      // Solicita acesso às contas via requestAccounts
       final dynamic response = await promiseToFuture(
-        callMethod(ethereum, 'request', [
+        callMethod(eth, 'request', [
           jsify({'method': 'eth_requestAccounts'})
         ]),
       );
@@ -882,26 +881,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final List accounts = response as List;
 
       if (accounts.isNotEmpty) {
+        jsLog("Conectado com sucesso: " + accounts[0].toString());
         setState(() {
           _walletAddress = accounts[0];
           _isConnected = true;
+          _isConnecting = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Carteira conectada com sucesso!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        _showSuccess('Carteira conectada!');
       }
     } catch (e) {
-      print("Erro detalhado ao conectar carteira: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Erro ao conectar: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      jsLog("Erro na conexão: " + e.toString());
+      _showError('Erro ao conectar: $e');
+      setState(() => _isConnecting = false);
     }
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: Colors.orange),
+    );
+  }
+
+  void _showSuccess(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: Colors.green),
+    );
   }
 
   @override
@@ -947,17 +951,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                       ),
                       GestureDetector(
-                        onTap: _isConnected ? null : _connectWallet,
+                        onTap: (_isConnected || _isConnecting) ? null : _connectWallet,
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(color: Colors.blueAccent.withOpacity(0.1), borderRadius: BorderRadius.circular(15), border: Border.all(color: _isConnected ? Colors.greenAccent : Colors.blueAccent.withOpacity(0.5)), boxShadow: [BoxShadow(color: Colors.blueAccent.withOpacity(0.1), blurRadius: 10)]),
+                          decoration: BoxDecoration(
+                            color: Colors.blueAccent.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                                color: _isConnected
+                                    ? Colors.greenAccent
+                                    : Colors.blueAccent.withOpacity(0.5)),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.blueAccent.withOpacity(0.1),
+                                  blurRadius: 10)
+                            ],
+                          ),
                           child: Row(
                             children: [
-                              Icon(_isConnected ? Icons.verified_user : Icons.account_balance_wallet_outlined, color: _isConnected ? Colors.greenAccent : Colors.cyanAccent, size: 18),
+                              Icon(
+                                  _isConnected
+                                      ? Icons.verified_user
+                                      : Icons.account_balance_wallet_outlined,
+                                  color: _isConnected
+                                      ? Colors.greenAccent
+                                      : Colors.cyanAccent,
+                                  size: 18),
                               const SizedBox(width: 10),
                               Text(
-                                _isConnected ? "terlinet.blockchain" : 'CONECTAR CARTEIRA',
-                                style: GoogleFonts.orbitron(fontSize: 14, color: Colors.white, fontWeight: FontWeight.bold),
+                                _isConnected
+                                    ? "terlinet.blockchain"
+                                    : (_isConnecting
+                                        ? "PROCESSANDO..."
+                                        : 'CONECTAR CARTEIRA'),
+                                style: GoogleFonts.orbitron(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
