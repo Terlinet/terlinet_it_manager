@@ -1000,18 +1000,6 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           }),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.5),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 1.5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.blueAccent.withOpacity(0.2),
-                                  blurRadius: 15,
-                                  spreadRadius: 1,
-                                ),
-                              ],
-                            ),
                             child: Text(
                               'terlinet.blockchain',
                               style: GoogleFonts.orbitron(
