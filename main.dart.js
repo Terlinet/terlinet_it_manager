@@ -87518,9 +87518,10 @@ return A.Bi(p,B.cI,A.nc(A.c([m,A.yw(A.dv(A.ha(o,B.bx,B.a3,B.aS),B.r,p,p,new A.cG
 agu(a){A.axV(new A.alm(this),a,t.z)},
 CG(a,b,c){var s=null,r=A.ak(13,B.i.t()>>>16&255,B.i.t()>>>8&255,B.i.t()&255),q=A.fb(10),p=A.iu(B.Da,1)
 return A.fh(A.iF(s,A.dv(A.nc(A.c([A.jC(a,B.aL,s,s),B.zc,A.bJ(b,s,s,s,A.dc().$3$color$fontSize$fontWeight(B.i,12,B.aq),s,s),B.id,B.Gi],t.p),B.a7,B.a3,B.aS),B.r,s,s,new A.cG(r,s,p,q,s,s,B.af),s,s,B.Fg,s),B.a8,!1,s,s,s,s,s,s,s,s,s,s,s,s,s,s,c,s,s,s,s,s,s),B.d0,s,s,s,s)},
-Dr(a){var s=null
-self.console.log("Baixando agente para: "+a)
-this.c.an(t.Pu).f.ru(A.OB(s,s,s,B.KR,s,B.G,s,A.bJ("Iniciando download para "+a+"...",s,s,s,s,s,s),s,B.ev,s,s,s,s,s,s,s,s,s,s))},
+Dr(a){var s=null,r=a==="windows"?"https://github.com/Terlinet/terlinet_it_manager/releases/download/v1.0.0/TerlineT_Agente.exe":"https://github.com/Terlinet/terlinet_it_manager/releases/latest"
+self.console.log("Iniciando download ("+a+"): "+r)
+self.window.open(r,"_blank")
+this.c.an(t.Pu).f.ru(A.OB(s,s,s,B.KR,s,B.G,s,A.bJ("O download do agente para "+a+" foi iniciado!",s,s,s,s,s,s),s,B.ev,s,s,s,s,s,s,s,s,s,s))},
 MA(a,b,c,d,e){var s=null
 return A.iF(s,A.fh(this.rV(a,b,c,d),B.d0,s,s,s,s),B.a8,!1,s,s,s,s,s,s,s,s,s,s,s,s,s,s,e,s,s,s,s,s,s)},
 rV(a,b,c,d){var s=null,r=A.ak(8,B.i.t()>>>16&255,B.i.t()>>>8&255,B.i.t()&255),q=A.fb(20),p=A.iu(A.ak(51,d.t()>>>16&255,d.t()>>>8&255,d.t()&255),1)
