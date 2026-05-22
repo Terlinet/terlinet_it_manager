@@ -957,61 +957,121 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final bool isMobile = size.width < 800;
+
     return Scaffold(
       backgroundColor: const Color(0xFF050505),
+      drawer: isMobile
+          ? Drawer(
+              backgroundColor: Colors.black,
+              child: Column(
+                children: [
+                  const SizedBox(height: 50),
+                  const Icon(Icons.shield_outlined, color: Colors.blueAccent, size: 50),
+                  const SizedBox(height: 30),
+                  _buildSidebarIcon(Icons.dashboard_customize_outlined, true),
+                  _buildSidebarIcon(Icons.account_balance_wallet_outlined, false),
+                  _buildSidebarIcon(Icons.message_outlined, false),
+                  _buildSidebarIcon(Icons.settings_outlined, false),
+                  const Spacer(),
+                  ListTile(
+                    leading: const Icon(Icons.logout, color: Colors.redAccent),
+                    title: Text('SAIR', style: GoogleFonts.orbitron(color: Colors.redAccent)),
+                    onTap: () => Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const InitialScreen()),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            )
+          : null,
+      appBar: isMobile
+          ? AppBar(
+              backgroundColor: Colors.black,
+              iconTheme: const IconDataThemeData(color: Colors.blueAccent),
+              title: Text('TERLINET MANAGER', style: GoogleFonts.orbitron(fontSize: 14, color: Colors.blueAccent)),
+              actions: const [
+                Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: Web3Badge(),
+                )
+              ],
+            )
+          : null,
       body: Row(
         children: [
-          Container(
-            width: 80,
-            color: Colors.black,
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                const Icon(Icons.shield_outlined, color: Colors.blueAccent, size: 30),
-                const Spacer(),
-                _buildSidebarIcon(Icons.dashboard_customize_outlined, true),
-                _buildSidebarIcon(Icons.account_balance_wallet_outlined, false),
-                _buildSidebarIcon(Icons.message_outlined, false),
-                _buildSidebarIcon(Icons.settings_outlined, false),
-                const Spacer(),
-                IconButton(icon: const Icon(Icons.logout, color: Colors.redAccent), onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const InitialScreen()))),
-                const SizedBox(height: 20),
-              ],
+          if (!isMobile)
+            Container(
+              width: 80,
+              color: Colors.black,
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  const Icon(Icons.shield_outlined, color: Colors.blueAccent, size: 30),
+                  const Spacer(),
+                  _buildSidebarIcon(Icons.dashboard_customize_outlined, true),
+                  _buildSidebarIcon(Icons.account_balance_wallet_outlined, false),
+                  _buildSidebarIcon(Icons.message_outlined, false),
+                  _buildSidebarIcon(Icons.settings_outlined, false),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.logout, color: Colors.redAccent),
+                    onPressed: () => Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => const InitialScreen()),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
-          ),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(40),
-              decoration: BoxDecoration(gradient: RadialGradient(center: Alignment.topLeft, radius: 1.5, colors: [Colors.blueAccent.withOpacity(0.05), Colors.transparent])),
+              padding: EdgeInsets.all(isMobile ? 20 : 40),
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topLeft,
+                  radius: 1.5,
+                  colors: [Colors.blueAccent.withOpacity(0.05), Colors.transparent],
+                ),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('SISTEMA DE GERENCIAMENTO IT', style: GoogleFonts.orbitron(fontSize: 12, color: Colors.blueAccent, letterSpacing: 2)),
-                          const SizedBox(height: 10),
-                          Text('Olá, Administrador', style: GoogleFonts.orbitron(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
-                        ],
-                      ),
-                      const Web3Badge(),
-                    ],
-                  ),
+                  if (!isMobile)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('SISTEMA DE GERENCIAMENTO IT', style: GoogleFonts.orbitron(fontSize: 12, color: Colors.blueAccent, letterSpacing: 2)),
+                            const SizedBox(height: 10),
+                            Text('Olá, Administrador', style: GoogleFonts.orbitron(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+                          ],
+                        ),
+                        const Web3Badge(),
+                      ],
+                    ),
+                  if (isMobile)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      child: Text('Olá, Administrador', style: GoogleFonts.orbitron(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                    ),
                   if (_isConnected)
                     Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Text("Wallet: ${_walletAddress.substring(0, 6)}...${_walletAddress.substring(_walletAddress.length - 4)}", style: const TextStyle(color: Colors.white54, fontSize: 10)),
                     ),
-                  const SizedBox(height: 50),
-                  // Grid de Status interativo
+                  SizedBox(height: isMobile ? 20 : 50),
+                  // Grid de Status interativo ajustado para Mobile
                   Expanded(
                     child: GridView.count(
-                      crossAxisCount: 3,
+                      crossAxisCount: isMobile ? 1 : (size.width < 1200 ? 2 : 3),
                       crossAxisSpacing: 20,
                       mainAxisSpacing: 20,
+                      childAspectRatio: isMobile ? 1.5 : 1,
                       children: [
                         _buildClickableStatusCard(
                           'SERVIDORES',
