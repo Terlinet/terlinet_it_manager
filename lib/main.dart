@@ -1070,10 +1070,42 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
               style: TextStyle(color: Colors.white70, fontSize: 12),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orangeAccent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.orangeAccent.withOpacity(0.3)),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.warning_amber_rounded, color: Colors.orangeAccent, size: 18),
+                      const SizedBox(width: 10),
+                      Text('PRÉ-REQUISITO (WINDOWS)', style: GoogleFonts.orbitron(fontSize: 10, color: Colors.orangeAccent)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Instale o Driver Npcap para habilitar a varredura de rede.',
+                    style: TextStyle(color: Colors.white60, fontSize: 10),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent, foregroundColor: Colors.black, minimumSize: const Size(double.infinity, 30)),
+                    onPressed: () => callMethod(window, 'open', ['https://npcap.com/dist/npcap-1.79.exe', '_blank']),
+                    icon: const Icon(Icons.download, size: 16),
+                    label: const Text('BAIXAR DRIVER NPCAP', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
             _buildDownloadOption(
               icon: Icons.window,
-              label: 'WINDOWS (.EXE)',
+              label: 'WINDOWS AGENTE (.EXE)',
               onTap: () => _downloadAgent('windows'),
             ),
             const SizedBox(height: 15),
