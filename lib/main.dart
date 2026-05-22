@@ -1130,10 +1130,18 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
   }
 
   void _downloadAgent(String platform) {
-    // Aqui redirecionaremos para o seu repositório no GitHub onde os arquivos estarão hospedados
-    final url = 'https://github.com/Terlinet/terlinet_it_manager/releases/latest';
-    jsLog("Baixando agente para: $platform");
-    _showSuccess('Iniciando download para $platform...');
+    String url = 'https://github.com/Terlinet/terlinet_it_manager/releases/latest';
+
+    if (platform == 'windows') {
+      url = 'https://github.com/Terlinet/terlinet_it_manager/releases/download/v1.0.0/TerlineT_Agente.exe';
+    }
+
+    jsLog("Iniciando download ($platform): " + url);
+
+    // Comando para abrir o link de download em uma nova aba/disparar o arquivo
+    callMethod(window, 'open', [url, '_blank']);
+
+    _showSuccess('O download do agente para $platform foi iniciado!');
   }
 
   void _showXMTPInbox(BuildContext context) {
