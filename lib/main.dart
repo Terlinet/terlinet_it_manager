@@ -990,7 +990,7 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
       appBar: isMobile
           ? AppBar(
               backgroundColor: Colors.black,
-              iconTheme: const IconDataThemeData(color: Colors.blueAccent),
+              iconTheme: const IconThemeData(color: Colors.blueAccent),
               title: Text('TERLINET MANAGER', style: GoogleFonts.orbitron(fontSize: 14, color: Colors.blueAccent)),
               actions: const [
                 Padding(
