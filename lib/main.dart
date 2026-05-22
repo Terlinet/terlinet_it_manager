@@ -1013,7 +1013,13 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                       crossAxisSpacing: 20,
                       mainAxisSpacing: 20,
                       children: [
-                        _buildStatusCard('SERVIDORES', 'ONLINE', Icons.dns, Colors.greenAccent),
+                        _buildClickableStatusCard(
+                          'SERVIDORES',
+                          'MONITORAR',
+                          Icons.dns,
+                          Colors.greenAccent,
+                          () => Navigator.push(context, MaterialPageRoute(builder: (context) => const DeviceMonitoringScreen())),
+                        ),
                         _buildStatusCard('TRÁFEGO REDE', 'ESTÁVEL', Icons.speed, Colors.blueAccent),
                         _buildStatusCard('SEGURANÇA', 'PROTEGIDO', Icons.lock, Colors.cyanAccent),
                         _buildStatusCard(
@@ -1235,6 +1241,143 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
           Text(title, style: GoogleFonts.orbitron(fontSize: 10, color: Colors.white54, letterSpacing: 1)),
           const SizedBox(height: 8),
           Text(value, style: GoogleFonts.orbitron(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
+        ],
+      ),
+    );
+  }
+}
+
+class DeviceMonitoringScreen extends StatefulWidget {
+  const DeviceMonitoringScreen({super.key});
+
+  @override
+  State<DeviceMonitoringScreen> createState() => _DeviceMonitoringScreenState();
+}
+
+class _DeviceMonitoringScreenState extends State<DeviceMonitoringScreen> {
+  List<dynamic> _devices = [];
+  String _lastUpdate = "Nunca";
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDevices();
+  }
+
+  Future<void> _fetchDevices() async {
+    setState(() => _isLoading = true);
+    try {
+      final response = await http.get(Uri.parse('https://tertulianoshow-terlinet-backend.hf.space/get_devices'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _devices = data['devices'] ?? [];
+          _lastUpdate = data['last_update'] ?? "Nunca";
+        });
+      }
+    } catch (e) {
+      print("Erro ao buscar dispositivos: $e");
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF050505),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: Text('MONITORAMENTO DE REDE', style: GoogleFonts.orbitron(fontSize: 16, color: Colors.greenAccent)),
+        actions: [
+          IconButton(icon: const Icon(Icons.refresh, color: Colors.greenAccent), onPressed: _fetchDevices),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              children: [
+                const Icon(Icons.history, color: Colors.white54, size: 16),
+                const SizedBox(width: 10),
+                Text('Última atualização: $_lastUpdate', style: const TextStyle(color: Colors.white54, fontSize: 12)),
+              ],
+            ),
+          ),
+          Expanded(
+            child: _isLoading
+              ? const Center(child: CircularProgressIndicator(color: Colors.greenAccent))
+              : _devices.isEmpty
+                ? _buildEmptyState()
+                : ListView.builder(
+                    padding: const EdgeInsets.all(20),
+                    itemCount: _devices.length,
+                    itemBuilder: (context, index) {
+                      final device = _devices[index];
+                      return _buildDeviceCard(device);
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.sensors_off, size: 80, color: Colors.white.withOpacity(0.1)),
+          const SizedBox(height: 20),
+          Text('NENHUM DISPOSITIVO DETECTADO', style: GoogleFonts.orbitron(color: Colors.white24, fontSize: 14)),
+          const SizedBox(height: 10),
+          const Text('Certifique-se de que o Agente está rodando na rede.', style: TextStyle(color: Colors.white24, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeviceCard(Map<String, dynamic> device) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.greenAccent.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.greenAccent.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.devices, color: Colors.greenAccent),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(device['name'] ?? 'Desconhecido', style: GoogleFonts.orbitron(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 5),
+                Text('IP: ${device['ip']}  |  MAC: ${device['mac']}', style: const TextStyle(color: Colors.white54, fontSize: 10)),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.greenAccent.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Text('ONLINE', style: TextStyle(color: Colors.greenAccent, fontSize: 10, fontWeight: FontWeight.bold)),
+          ),
         ],
       ),
     );
