@@ -1023,7 +1023,13 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
                           Colors.grey,
                         ),
                         _buildStatusCard('UPTIME', '99.9%', Icons.timer_outlined, Colors.orangeAccent),
-                        _buildStatusCard('USUÁRIOS', 'VER TODOS', Icons.people_outline, Colors.white60),
+                        _buildClickableStatusCard(
+                          'AGENTE REDE',
+                          'INSTALAR',
+                          Icons.install_desktop_outlined,
+                          Colors.cyanAccent,
+                          () => _showAgentDialog(context),
+                        ),
                       ],
                     ),
                   ),
@@ -1034,6 +1040,94 @@ class _DashboardScreenState extends State<DashboardScreen> with TickerProviderSt
         ],
       ),
     );
+  }
+
+  void _showAgentDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0A0A0A),
+        shape: RoundedRectangleBorder(
+          side: const BorderSide(color: Colors.cyanAccent, width: 1),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'INSTALAR AGENTE MONITOR',
+          style: GoogleFonts.orbitron(color: Colors.white, fontSize: 18, letterSpacing: 2),
+          textAlign: TextAlign.center,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'O agente permite monitorar dispositivos em tempo real na sua rede local.',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 30),
+            _buildDownloadOption(
+              icon: Icons.window,
+              label: 'WINDOWS (.EXE)',
+              onTap: () => _downloadAgent('windows'),
+            ),
+            const SizedBox(height: 15),
+            _buildDownloadOption(
+              icon: Icons.terminal,
+              label: 'LINUX / MAC (.PY)',
+              onTap: () => _downloadAgent('linux'),
+            ),
+            const SizedBox(height: 15),
+            _buildDownloadOption(
+              icon: Icons.android,
+              label: 'ANDROID (.APK)',
+              onTap: () => _downloadAgent('android'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('FECHAR', style: GoogleFonts.orbitron(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDownloadOption({required IconData icon, required String label, required VoidCallback onTap}) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.white10),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.cyanAccent),
+              const SizedBox(width: 20),
+              Text(
+                label,
+                style: GoogleFonts.orbitron(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+              const Spacer(),
+              const Icon(Icons.download, color: Colors.white24, size: 18),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _downloadAgent(String platform) {
+    // Aqui redirecionaremos para o seu repositório no GitHub onde os arquivos estarão hospedados
+    final url = 'https://github.com/Terlinet/terlinet_it_manager/releases/latest';
+    jsLog("Baixando agente para: $platform");
+    _showSuccess('Iniciando download para $platform...');
   }
 
   void _showXMTPInbox(BuildContext context) {
